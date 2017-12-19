@@ -1,0 +1,13 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "4.18",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "BomberClone",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
