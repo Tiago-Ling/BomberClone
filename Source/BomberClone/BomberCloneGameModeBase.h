@@ -14,7 +14,9 @@ class BOMBERCLONE_API ABomberCloneGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
-	
+public:
+	UFUNCTION(BlueprintCallable, Category = BomberGame)
+	void SetupLevel();
 	
 	
 };

@@ -2,6 +2,9 @@
 
 #include "BomberCloneGameModeBase.h"
 
+void ABomberCloneGameModeBase::SetupLevel()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Setting level up!"));
 
-
-
+	// TODO: Randomize destructible blocks
+}
