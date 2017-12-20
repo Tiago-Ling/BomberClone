@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
+#include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
 #include "DestructibleBlock.generated.h"
 
 UCLASS()
@@ -24,11 +25,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	UStaticMeshComponent* Mesh;
 
+	UPROPERTY(VisibleAnywhere, Category = "Effects")
+	UParticleSystemComponent* Explosion;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Overlap")
 	void HandleOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintCallable, Category = "Effects")
+	void OnExplosionFinished(UParticleSystemComponent* PSystem);
 
 public:	
 	// Called every frame
