@@ -10,10 +10,9 @@ ABomb::ABomb()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH COMP"));
-	Mesh->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	Mesh->SetWorldScale3D(FVector(0.5f, 0.5f, 0.5f));
 	Mesh->AddRelativeLocation(FVector(0.0f, 0.0f, -50.0f));
-	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere"));
 	Mesh->SetStaticMesh(MeshAsset.Object);
@@ -39,7 +38,7 @@ void ABomb::BeginPlay()
 	Super::BeginPlay();
 	
 	//Start bomb timer
-	GetWorld()->GetTimerManager().SetTimer(BombTimer, this, &ABomb::OnTimerFinished, 5.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(BombTimer, this, &ABomb::OnTimerFinished, 3.0f, false);
 }
 
 void ABomb::OnTimerFinished()
