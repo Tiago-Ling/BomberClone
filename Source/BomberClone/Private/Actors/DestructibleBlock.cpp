@@ -9,7 +9,7 @@ ADestructibleBlock::ADestructibleBlock()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	this->Tags.Add(FName(TEXT("DestructibleBlock")));
+	this->Tags.Add(FName("DestructibleBlock"));
 	
 	OverlapComp = CreateDefaultSubobject<UBoxComponent>(TEXT("OVERLAP COMP"));
 	OverlapComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -22,7 +22,7 @@ ADestructibleBlock::ADestructibleBlock()
 	RootComponent = OverlapComp;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MESH COMP"));
-	Mesh->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	Mesh->SetupAttachment(RootComponent);
 	Mesh->AddRelativeLocation(FVector(0.0f, 0.0f, -50.0f));
 	Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 
@@ -49,11 +49,11 @@ void ADestructibleBlock::BeginPlay()
 }
 
 void ADestructibleBlock::HandleOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	UE_LOG(LogTemp, Warning, TEXT("BLOCK Overlapped!"));
-	
-	if (OtherActor->ActorHasTag(FName(TEXT("DestructibleBlock"))))
+{	
+	if (OtherActor->ActorHasTag(FName("DestructibleBlock")))
 		return;
+
+	//UE_LOG(LogTemp, Warning, TEXT("BLOCK Overlapped!"));
 
 	Mesh->DestroyComponent();
 	Explosion->Activate(true);

@@ -4,6 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "PlayerCharacter.h"
+#include "BomberPlayerController.h"
+#include "DestructibleBlock.h"
+#include "IndestructibleBlock.h"
+#include "GameFramework/PlayerStart.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "BomberCloneGameModeBase.generated.h"
 
 /**
@@ -18,5 +24,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = BomberGame)
 	void SetupLevel();
 	
+	ABomberCloneGameModeBase();
+
+	virtual void BeginPlay() override;
+
+	//APlayerStart* P1Start;
+	//APlayerStart* P2Start;
+
+protected:
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 	
 };
