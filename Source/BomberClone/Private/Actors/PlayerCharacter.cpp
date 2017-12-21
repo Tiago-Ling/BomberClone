@@ -9,22 +9,51 @@ APlayerCharacter::APlayerCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	USkeletalMeshComponent* MeshComp = FindComponentByClass<USkeletalMeshComponent>();
+	MeshComp = FindComponentByClass<USkeletalMeshComponent>();
 	const ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/AnimStarterPack/UE4_Mannequin/Mesh/SK_Mannequin.SK_Mannequin"));
 	MeshComp->SetSkeletalMesh(MeshAsset.Object);
 
-	const ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimAsset(TEXT("/Game/AnimStarterPack/UE4ASP_HeroTPP_AnimBlueprint.UE4ASP_HeroTPP_AnimBlueprint"));
+	//Loading both player materials
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> P1MaterialAsset(TEXT("/Game/MaterialInstances/P1_Material.P1_Material"));
+	P1Material = UMaterialInstanceDynamic::Create(P1MaterialAsset.Object, NULL);
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> P2MaterialAsset(TEXT("/Game/MaterialInstances/P2_Material.P2_Material"));
+	P2Material = UMaterialInstanceDynamic::Create(P2MaterialAsset.Object, NULL);
+
+	// Animation blueprints must be loaded in a different way than other assets, otherwise they'll crash a packaged game (but will mislead you by working in the editor!)
+	FString AnimClassStringTest = "Class'/Game/AnimStarterPack/CharacterAnimBP.CharacterAnimBP_C'";
+	UClass* AnimationClass = LoadObject<UClass>(NULL, *AnimClassStringTest);
+	if (!AnimationClass) return;
+
 	MeshComp->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	MeshComp->SetAnimInstanceClass(AnimAsset.Object->GeneratedClass);
+	MeshComp->SetAnimInstanceClass(AnimationClass);
 	MeshComp->AddRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
 
+	// Regular way of loading assets in constructor - won't work with animation blueprints !!!
+	//MeshComp = FindComponentByClass<USkeletalMeshComponent>();
+	//const ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimAsset(TEXT("AnimBlueprint'/Game/AnimStarterPack/CharacterAnimBP.CharacterAnimBP'"));
+	//MeshComp->SetAnimInstanceClass(AnimAsset.Object->GeneratedClass);
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
+	APlayerController* PController = Cast<APlayerController>(Controller);
+	if (MeshComp && PController) {
+		int32 PId = PController->GetLocalPlayer()->GetControllerId();
+		UE_LOG(LogTemp, Warning, TEXT("Controller ID : %i"), PId);
+		if (PId == 0) {
+			MeshComp->SetMaterial(0, P1Material);
+		}
+		else {
+			MeshComp->SetMaterial(0, P2Material);
+		}
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Material not set!!!"));
+	}
+
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -32,45 +61,5 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-}
-
-// Called to bind functionality to input
-void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	InputComponent->BindAxis("Forward", this, &APlayerCharacter::InputForward);
-	InputComponent->BindAxis("Right", this, &APlayerCharacter::InputRight);
-	InputComponent->BindAction("Action", IE_Pressed, this, &APlayerCharacter::InputAction);
-
-}
-
-void APlayerCharacter::InputForward(float Axis)
-{
-	if (Controller && Axis != 0.f)
-	{
-		// Limit pitch when walking or falling
-		const bool bLimitRotation = (GetCharacterMovement()->IsMovingOnGround() || GetCharacterMovement()->IsFalling());
-		const FRotator Rotation = bLimitRotation ? GetActorRotation() : Controller->GetControlRotation();
-		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::X);
-
-		AddMovementInput(Direction, Axis);
-	}
-}
-
-void APlayerCharacter::InputRight(float Axis)
-{
-	if (Axis != 0.f)
-	{
-		const FRotator Rotation = GetActorRotation() * (90.0f * Axis);
-		const FVector Direction = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
-
-		AddMovementInput(Direction, Axis);
-	}
-}
-
-void APlayerCharacter::InputAction()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Player Action!"));
 }
 

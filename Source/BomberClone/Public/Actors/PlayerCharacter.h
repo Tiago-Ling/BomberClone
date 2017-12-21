@@ -7,6 +7,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Classes/Animation/AnimBlueprint.h"
+#include "Bomb.h"
+#include "BomberPlayerController.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -22,15 +24,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	USkeletalMeshComponent* MeshComp;
+
+	UMaterialInstanceDynamic* P1Material;
+	UMaterialInstanceDynamic* P2Material;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	void InputForward(float Axis);
-	void InputRight(float Axis);
-	void InputAction();
-	
 };
